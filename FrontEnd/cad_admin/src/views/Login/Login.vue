@@ -19,7 +19,9 @@
 </template>
 
 <script>
+import axios from "axios"
 export default{
+    name: "Login",
     data(){
         return{
             nomeDeUsuario: "",
@@ -28,7 +30,6 @@ export default{
     },
     methods:{
         handlerLogin(){
-            axios.post('http://localhost:8080/novo/login')
         }
     }
 }
