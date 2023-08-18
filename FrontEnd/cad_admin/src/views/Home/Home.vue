@@ -17,7 +17,7 @@ export default{
 <style scoped>
 .main{
     width: 100%;
-    height: 390px;
+    height: 395px;
     background-color: rgb(28, 28, 28);
 }
 
@@ -40,6 +40,15 @@ export default{
 .btns button{
     width: 300px;
     height: 35px;
+    background-color: darkblue;
+    outline: none;
+    border: 2px solid darkblue;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.5s;
+}
+
+.btns button:hover{
     background-color: dodgerblue;
     outline: none;
     border: 2px solid dodgerblue;
