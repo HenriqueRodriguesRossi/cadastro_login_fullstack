@@ -17,7 +17,7 @@ export default{
 <style scoped>
 .main{
     width: 100%;
-    height: 395px;
+    height: 100vh;
     background-color: rgb(28, 28, 28);
 }
 
