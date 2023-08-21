@@ -1,5 +1,5 @@
 <template>
-   <main class="main">
+    <main class="main">
         <h2>Login ADMIN</h2>
         <form id="form" class="form" @submit.prevent="handlerLogin">
             <div class="campos">
@@ -18,36 +18,48 @@
 </template>
 
 <script>
-export default{
+import axios from 'axios';
+const url = 'http://localhost:8080/novo/login'
+
+export default {
     name: "Login",
-    data(){
-        return{
+    data() {
+        return {
             nomeDeUsuario: "",
             senha: ""
         }
     },
-    methods:{
-        handlerLogin(){
+    methods: {
+        handlerLogin() {
+            axios.post(url, {
+                nomeDeUsuario: this.nomeDeUsuario,
+                senha: this.senha
+            }).then(function (response) {
+                console.log(response);
+            }).catch(function (error) {
+                console.error(error);
+            });
         }
     }
 }
+
 </script>
 
 <style scoped>
-.main{
+.main {
     width: 100%;
     height: 100vh;
     background-color: rgb(28, 28, 28);
 }
 
-h2{
+h2 {
     color: ghostwhite;
     font-size: 30px;
     text-align: center;
     padding: 30px;
 }
 
-.form{
+.form {
     width: auto;
     height: auto;
     display: flex;
@@ -57,13 +69,13 @@ h2{
     gap: 10px;
 }
 
-label{
+label {
     font-size: 20px;
     color: ghostwhite;
     padding-left: 10px;
 }
 
-.inputs{
+.inputs {
     width: 300px;
     height: 35px;
     outline: none;
@@ -72,11 +84,11 @@ label{
     transition: all 0.5s;
 }
 
-.inputs:focus{
+.inputs:focus {
     border: 2.5px solid dodgerblue;
 }
 
-button{
+button {
     width: 150px;
     height: 35px;
     border-radius: 10px;
@@ -89,7 +101,7 @@ button{
     transition: all 0.5s;
 }
 
-button:hover{
+button:hover {
     background-color: dodgerblue;
     border: 2px solid dodgerblue;
 }

@@ -1,7 +1,7 @@
 <template>
     <main class="main">
         <h2>Cadastro ADMIN</h2>
-        <form id="form" class="form" @submit.prevent="cadastraUsuario">
+        <form id="form" class="form" @submit.prevent="handlerCadastro">
             <div class="campos">
                 <label for="nome">Nome:</label> <br>
                 <input type="text" name="nome" id="nome" placeholder="Digite o seu nome" class="inputs" v-model="nome">
@@ -20,6 +20,7 @@
                 <label for="senha">Senha:</label> <br>
                 <input type="password" name="senha" id="senha" placeholder="Digite a sua senha" class="inputs"
                     v-model="senha">
+                    <span>{{ inputError }}</span>
             </div>
             <div class="campos">
                 <label for="repitaSenha">Repita a Senha:</label> <br>
@@ -32,8 +33,10 @@
 </template>
 
 <script>
+import axios from 'axios'
+const url = 'http://localhost:8080/nova/conta'
 export default {
-    name: "Cadastro",
+    name: "Login",
     data() {
         return {
             nome: "",
@@ -44,7 +47,21 @@ export default {
         }
     },
     methods: {
-        cadastraUsuario() {
+        handlerCadastro() {
+            axios.post(url, {
+                nome: this.nomeDeUsuario,
+                sobrenome: this.sobrenome,
+                nomeDeUsuario: this.nomeDeUsuario,
+                senha: this.senha,
+                repitaSenha: this.repitaSenha
+            }).then(function (response) {
+                console.log(response.request.responseText);
+            }).catch(function (error) {
+                console.error(error)
+                let responseText = JSON.parse(error.request.responseText)
+                console.log(responseText.mensagem)
+                input
+            });
         }
     }
 }
