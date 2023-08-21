@@ -5,40 +5,42 @@
             <div class="campos">
                 <label for="nome">Nome:</label> <br>
                 <input type="text" name="nome" id="nome" placeholder="Digite o seu nome" class="inputs" v-model="nome"> <br>
-                <span>{{ inputError }}</span>
+                <span>{{ inputErrors.nome }}</span>
             </div>
             <div class="campos">
                 <label for="sobrenome">Sobrenome:</label> <br>
                 <input type="text" name="sobrenome" id="sobrenome" placeholder="Digite o seu sobrenome" class="inputs"
                     v-model="sobrenome"> <br>
-                <span>{{ inputError }}</span>
+                <span>{{ inputErrors.sobrenome }}</span>
             </div>
             <div class="campos">
                 <label for="nomeDeUsuario">Nome de Usuário:</label> <br>
                 <input type="text" name="nomeDeUsuario" id="nomeDeUsuario" placeholder="Digite o seu nome de usuário"
                     class="inputs" v-model="nomeDeUsuario"> <br>
-                <span>{{ inputError }}</span>
+                <span>{{ inputErrors.nomeDeUsuario }}</span>
             </div>
             <div class="campos">
                 <label for="senha">Senha:</label> <br>
                 <input type="password" name="senha" id="senha" placeholder="Digite a sua senha" class="inputs"
                     v-model="senha"> <br>
-                    <span>{{ inputError }}</span>
+                <span>{{ inputErrors.senha }}</span>
             </div>
             <div class="campos">
                 <label for="repitaSenha">Repita a Senha:</label> <br>
                 <input type="password" name="repitaSenha" id="repitaSenha" placeholder="Digite a sua senha novamente"
                     class="inputs" v-model="repitaSenha"> <br>
-                <span>{{ inputError }}</span>
+                <span>{{ inputErrors.repitaSenha }}</span>
             </div>
             <button type="submit">Cadastrar</button>
+
+            <span class="sucesso">{{ mensagemSucesso }}</span>
         </form>
     </main>
 </template>
 
 <script>
 import * as Yup from "yup"
-import {captureErroYup} from "../../utils/captureErroYup"
+import { captureErroYup } from "../../utils/captureErroYup"
 import axios from 'axios'
 const url = 'http://localhost:8080/nova/conta'
 
@@ -52,60 +54,79 @@ export default {
             senha: "",
             repitaSenha: "",
 
-            inputError: ""
+            inputErrors: {
+                nome: "",
+                sobrenome: "",
+                nomeDeUsuario: "",
+                senha: "",
+                repitaSenha: ""
+            },
+
+            mensagemSucesso: ""
         }
     },
     methods: {
         handlerCadastro() {
-            const validationSchema = Yup.object().shape({
-                nome: Yup.string().required(this.inputError = "O nome é obrigatório!").min(3, this.inputError = "O nome deve ter no mínimo 3 caracteres!"),
-                sobrenome: Yup.string().required(this.inputError = "O sobrenome é obrigatório!").min(4, this.inputError = "O sobrenome deve ter no mínimo 4 caracteres!"),
-                nomeDeUsuario: Yup.string().required(this.inputError = "O nome de usuário é obrigatório!").min(5, this.inputError = "Nome de usuário deve ter no mínimo 5 caracteres!"),
-                senha: Yup.string().required( this.inputError = "Nome de usuário é obrigatório!").min(8,  this.inputError = "Senha deve ter no mínimo 8 caracteres!"),
-                repitaSenha: Yup.string().required( this.inputError = "O campo repita a senha é obrigatório!")
-            })
+            try {
+                const validationSchema = Yup.object().shape({
+                    nome: Yup.string().required().min(3, "Campo inválido!"),
+                    sobrenome: Yup.string().required().min(4, "Campo inválido!"),
+                    nomeDeUsuario: Yup.string().required().min(5, "Campo inválido!"),
+                    senha: Yup.string().required().min(8, "Campo inválido!"),
+                    repitaSenha: Yup.string().required().oneOf([Yup.ref('senha'), null], 'Senhas devem coincidir!'),   
+                })
 
-            validationSchema.validateSync(
-          {
-            nome: this.nome,
-            sobrenome: this.sobrenome,
-            nomeDeUsuario: this.nomeDeUsuario,
-            senha: this.senha,
-            repitaSenha: this.repitaSenha
-          },
-          {abortEarly: false}
-        )
-            axios.post(url, {
-                nome: this.nomeDeUsuario,
-                sobrenome: this.sobrenome,
-                nomeDeUsuario: this.nomeDeUsuario,
-                senha: this.senha,
-                repitaSenha: this.repitaSenha
-            }).then(function (response) {
-                console.log("Usuário cadastrado com sucesso: " + response);
-            }).catch(function (error) {
-                console.error("Erro ao cadastrar o usuário: " + error)
-            });
+                validationSchema.validateSync(
+                    {
+                        nome: this.nome,
+                        sobrenome: this.sobrenome,
+                        nomeDeUsuario: this.nomeDeUsuario,
+                        senha: this.senha,
+                        repitaSenha: this.repitaSenha
+                    },
+                    { abortEarly: false }
+                )
+
+                this.inputErrors = {}
+                this.mensagemSucesso = "Cadastrado com sucesso!"
+
+                axios.post(url, {
+                    nome: this.nomeDeUsuario,
+                    sobrenome: this.sobrenome,
+                    nomeDeUsuario: this.nomeDeUsuario,
+                    senha: this.senha,
+                    repitaSenha: this.repitaSenha
+                }).then(function (response) {
+                    this.mensagemSucesso = "Cadastrado com sucesso!"
+                }).catch(function (error) {
+                    console.error("Erro ao cadastrar o usuário: " + error)
+                });
+            } catch (error) {
+                if (error instanceof Yup.ValidationError) {
+                    this.inputErrors = captureErroYup(error)
+                }
+            }
+
         }
     }
 }
 </script>
 
 <style scoped>
-.main{
+.main {
     width: 100%;
-    height: 100vh;
+    height: 100%;
     background-color: rgb(28, 28, 28);
 }
 
-h2{
+h2 {
     color: ghostwhite;
     font-size: 30px;
     text-align: center;
     padding: 30px;
 }
 
-.form{
+.form {
     width: auto;
     height: auto;
     display: flex;
@@ -115,13 +136,13 @@ h2{
     gap: 10px;
 }
 
-label{
+label {
     font-size: 20px;
     color: ghostwhite;
     padding-left: 10px;
 }
 
-.inputs{
+.inputs {
     width: 300px;
     height: 35px;
     outline: none;
@@ -130,17 +151,17 @@ label{
     transition: all 0.5s;
 }
 
-.inputs:focus{
+.inputs:focus {
     border: 2.5px solid dodgerblue;
 }
 
-span{
+span {
     font-size: 16px;
     color: red;
     padding: 10px;
 }
 
-button{
+button {
     width: 150px;
     height: 35px;
     border-radius: 10px;
@@ -153,8 +174,13 @@ button{
     transition: all 0.5s;
 }
 
-button:hover{
+button:hover {
     background-color: dodgerblue;
     border: 2px solid dodgerblue;
+}
+
+.sucesso{
+    color: green;
+    font-size: 20px;
 }
 </style>
